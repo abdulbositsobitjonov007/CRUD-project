@@ -146,19 +146,19 @@ async function editTeachers(id) {
     outerModal.classList.remove("hidden");
     select = id;
     try {
-        let res = await axios.get(`https://691484a73746c71fe0489020.mockapi.io/teachers${id}`);
-        console.log((innerModal[0].value = res.data.firstname));
-        console.log((innerModal[1].value = res.data.lastname));
-        console.log((innerModal[2].value = res.data.phone));
-        console.log((innerModal[3].value = res.data.email));
-        console.log((innerModal[4].value = res.data.age));
-        console.log((innerModal[5].value = res.data.experience));
-        console.log((innerModal[6].value = res.data.grade));
-        console.log((innerModal[7].value = res.data.avatar));
-        console.log((innerModal[8].value = res.data.rating));
-        console.log((innerModal[9].value = res.data.profession));
-        console.log((innerModal[10].value = res.data.telegram));
-        console.log((innerModal[11].checked = res.data.gender));
+        let res = await axios.get(`https://691484a73746c71fe0489020.mockapi.io/teachers/${id}`);
+        innerModal[0].value = res.data.firstname;
+        innerModal[1].value = res.data.lastname;
+        innerModal[2].value = res.data.phone;
+        innerModal[3].value = res.data.email;
+        innerModal[4].value = res.data.age;
+        innerModal[5].value = res.data.experience;
+        innerModal[6].value = res.data.grade;
+        innerModal[7].value = res.data.avatar;
+        innerModal[8].value = res.data.rating;
+        innerModal[9].value = res.data.profession;
+        innerModal[10].value = res.data.telegram;
+        innerModal[11].checked = res.data.gender;
         
     } catch (err) {
         console.log(err);

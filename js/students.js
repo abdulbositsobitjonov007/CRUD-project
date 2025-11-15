@@ -5,7 +5,7 @@ let teacherId = path.get("teacherId");
 let students = document.getElementById("students");
 
 let addStudents = document.getElementById("add-students");
-
+let selectTeachers = document.getElementById("selectteachers");
 let outerModal = document.getElementById("outer-modal");
 let innerModal = document.getElementById("inner-modal");
 
@@ -40,7 +40,7 @@ async function getStudents() {
     try {
         let res = await axios(teacherId ? `https://691484a73746c71fe0489020.mockapi.io/teachers/${teacherId}/students` : `https://691484a73746c71fe0489020.mockapi.io/students`)
         console.log(res.data);
-
+students.innerHTML = "";
         res?.data.map((el) => {
             students.innerHTML +=
                 `
@@ -73,8 +73,8 @@ async function getStudents() {
         <span class="text-sm text-gray-500 dark:text-gray-400">${el.age}</span>
         <div class="flex mt-4 md:mt-6">
             <a href="../pages/students.html?teacherId=${el.id}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">See Info</a>
-            <button onClick="editStudents(${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-blue-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-blue-700 duration-300">Edit</button>
-            <button onClick="deleteStudents(${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-red-700 dark:bg-gray-800 dark:text-red-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-700 duration-300">Delete</button>
+            <button onClick="editStudents(${el.teacherId}, ${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-blue-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-blue-700 duration-300">Edit</button>
+            <button onClick="deleteStudents(${el.teacherId}, ${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-red-700 dark:bg-gray-800 dark:text-red-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-700 duration-300">Delete</button>
         </div>
     </div>
 </div>
@@ -88,9 +88,28 @@ async function getStudents() {
     }
 }
 
+async function getTeachers() {
+    try{
+       let res = await axios.get("https://691484a73746c71fe0489020.mockapi.io/teachers");
+    let teachers = res?.data;
+    console.log(teachers);
+    
+    teachers.map((el) => {
+        selectTeachers.innerHTML += `
+        <option value="${el.id}">${el.firstname}</option>
+        `
+    })
+    }catch(err){
+        console.log(err);
+        
+    }
+}
+
 getStudents();
 
-async function deleteStudents(id) {
+
+
+async function deleteStudents(teacherId, id) {
     try {
         await axios.delete(`https://691484a73746c71fe0489020.mockapi.io/teachers/${teacherId}/students/${id}`);
         getStudents();
@@ -116,11 +135,12 @@ innerModal.addEventListener("submit", async function (e) {
     option.telegram = e.target[10].value;
     option.gender = e.target[11].checked;
 
+
     try {
 
         select ?
 
-            await axios.put(`https://691484a73746c71fe0489020.mockapi.io/students/${select}`, option)
+            await axios.put(`https://691484a73746c71fe0489020.mockapi.io/teachers/${option.teacherId}/students/${select}`, option)
             :
             await axios.post(`https://691484a73746c71fe0489020.mockapi.io/students`, option)
 
@@ -149,23 +169,25 @@ innerModal.addEventListener("submit", async function (e) {
 });
 
 
-async function editStudents(id) {
+async function editStudents(teacherId, id) {
     outerModal.classList.remove("hidden");
     select = id;
     try {
-        let res = await axios.get(`https://691484a73746c71fe0489020.mockapi.io/teachers/${teacherId}/students${id}`);
-        innerModal[0].value = res.data.firstname;
-        innerModal[1].value = res.data.lastname;
-        innerModal[2].value = res.data.phone;
-        innerModal[3].value = res.data.email;
-        innerModal[4].value = res.data.age;
-        innerModal[5].value = res.data.experience;
-        innerModal[6].value = res.data.grade;
-        innerModal[7].value = res.data.avatar;
-        innerModal[8].value = res.data.rating;
-        innerModal[9].value = res.data.profession;
-        innerModal[10].value = res.data.telegram;
-        innerModal[11].checked = res.data.gender;
+        let res = await axios.get(`https://691484a73746c71fe0489020.mockapi.io/teachers/${teacherId}/students/${id}`);
+        let oneStudent = res?.data;
+        innerModal[0].value = oneStudent.firstname;
+        innerModal[1].value = oneStudent.lastname;
+        innerModal[2].value = oneStudent.phone;
+        innerModal[3].value = oneStudent.email;
+        innerModal[4].value = oneStudent.age;
+        innerModal[5].value = oneStudent.experience;
+        innerModal[6].value = oneStudent.grade;
+        innerModal[7].value = oneStudent.avatar;
+        innerModal[8].value = oneStudent.rating;
+        innerModal[9].value = oneStudent.profession;
+        innerModal[10].value = oneStudent.telegram;
+        innerModal[11].value = oneStudent.teacherId;
+        innerModal[12].checked = oneStudent.gender;
 
     } catch (err) {
         console.log(err);
