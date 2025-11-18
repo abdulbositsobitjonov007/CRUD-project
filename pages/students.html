@@ -43,6 +43,8 @@
         </div>
     </header>
 
+    <div id="toast" class="hidden z-[4] p-[30px] text-[white] text-[20px] bg-[red] fixed top-[20px] right-[20px]"></div>
+
     <main>
         <button data-drawer-target="default-sidebar" data-drawer-toggle="default-sidebar"
             aria-controls="default-sidebar" type="button"
@@ -237,10 +239,12 @@
             </div>
             <div class="relative z-0 w-full mb-5 group">
                 
-                <label for="selectteacher"
-                    class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Telegram</label>
-                    <select name="" id="selectteacher">
-                        <option value="">Choose teacher</option>
+                <label for="countries" class="block mb-2.5 text-sm font-medium text-heading">Choose a teacher</label>
+                <select id="select-teachers"
+                    class="block w-full px-3 py-2.5 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body">
+                    <option selected>Choose a teacher</option>
+
+                </select>
                         
                     </select>
             </div>
@@ -249,7 +253,7 @@
                 <input class="w-[15px] h-[15px]" id="check" type="checkbox">
                 <label for="check">Male?</label>
             </div>
-            <button type="submit"
+            <button id="students-btn" type="submit"
                 class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
         </form>
     </div>

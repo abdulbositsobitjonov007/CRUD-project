@@ -7,6 +7,7 @@
     <title>Document</title>
     <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script defer src="./js/main.js"></script>
+    <!-- <script defer src="./js/pagination.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 
@@ -31,7 +32,7 @@
                                 d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
                         </svg>
                     </div>
-                    <input type="search" id="default-search"
+                    <input type="search" id="search"
                         class="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Search Mockups, Logos..." required />
                     <button type="submit"
@@ -125,6 +126,20 @@
                 <h1 class="text-[30px] text-[black] font-extrabold pb-[50px]">
                     Our Teachers
                 </h1>
+
+                
+
+                <div  class="flex justify-center pb-[50px]">
+                    <ul class="flex space-x-px text-sm" id="pagination">
+
+                    </ul>
+                </div>
+                
+                <select id="sort-by-names" class="px-[15px] mb-[30px] py-[10px] rounded-lg text-[white] text-[20px] bg-[darkblue]" name="">
+                    <option value="asc">A-Z</option>
+                    <option value="desc">Z-A</option>
+                </select>
+
                 <div id="teachers" class="grid grid-cols-3 gap-[30px]">
 
 
@@ -138,7 +153,8 @@
 
     </main>
 
-    <div id="outer-modal" class="hidden fixed z-[5] top-0 left-0 w-full h-full flex items-center justify-center bg-[grey]/60">
+    <div id="outer-modal"
+        class="hidden fixed z-[5] top-0 left-0 w-full h-full flex items-center justify-center bg-[grey]/60">
         <form id="inner-modal" class="max-w-md mx-auto bg-[white] p-[40px]">
 
 
@@ -185,7 +201,7 @@
                         placeholder=" " required />
                     <label for="floating_first_name"
                         class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Age
-                        </label>
+                    </label>
                 </div>
                 <div class="relative z-0 w-full mb-5 group">
                     <input type="text" name="floating_last_name" id="floating_last_name"
@@ -247,7 +263,7 @@
     </div>
 
 
-    
+
 
 </body>
 

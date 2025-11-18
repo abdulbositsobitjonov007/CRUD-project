@@ -4,6 +4,22 @@ let addTeachers = document.getElementById("add-teachers");
 
 let outerModal = document.getElementById("outer-modal");
 let innerModal = document.getElementById("inner-modal");
+let search = document.getElementById("search");
+let pagination = document.getElementById("pagination");
+let allTeachers;
+let sortByNames = document.getElementById("sort-by-names");
+
+sortByNames.addEventListener("click", async function (e) {
+    let sort = e.target.value;
+
+    try {
+        let resUI = await axios(`https://691484a73746c71fe0489020.mockapi.io/teachers?sortBy=firstname&order=${sort}`);
+    mapAllTeachers(teachers, resUI.data)
+    } catch (err) {
+        console.log(err);
+
+    }
+})
 
 let select = null;
 
@@ -14,16 +30,16 @@ addTeachers.addEventListener("click", function () {
 outerModal.addEventListener("click", function () {
     outerModal.classList.add("hidden");
     select = null;
-    innerModal[0].value = "" ;
-    innerModal[1].value = "" ;
-    innerModal[2].value = "" ;
-    innerModal[3].value = "" ;
-    innerModal[4].value = "" ;
-    innerModal[5].value = "" ;
-    innerModal[6].value = "" ;
-    innerModal[7].value = "" ;
-    innerModal[8].value = "" ;
-    innerModal[9].value = "" ;
+    innerModal[0].value = "";
+    innerModal[1].value = "";
+    innerModal[2].value = "";
+    innerModal[3].value = "";
+    innerModal[4].value = "";
+    innerModal[5].value = "";
+    innerModal[6].value = "";
+    innerModal[7].value = "";
+    innerModal[8].value = "";
+    innerModal[9].value = "";
     innerModal[10].value = "";
     innerModal[11].checked = false;
 });
@@ -33,13 +49,85 @@ innerModal.addEventListener("click", function (e) {
 });
 
 async function getTeachers() {
+    let page = 1;
+    let limit = 6;
     try {
-        let res = await axios(`https://691484a73746c71fe0489020.mockapi.io/teachers`)
+        let res = await axios(`https://691484a73746c71fe0489020.mockapi.io/teachers`);
+        let resUI = await axios(`https://691484a73746c71fe0489020.mockapi.io/teachers?page=${page}&limit=${limit}`);
         console.log(res.data);
-        teachers.innerHTML = "";
-        res?.data.map((el) => {
-            teachers.innerHTML +=
-                `
+        mapAllTeachers(teachers, resUI.data)
+        let pageCount = Math.ceil(res.data.length / limit);
+        paginationBtn(page, limit, pageCount)
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+getTeachers();
+
+function paginationBtn(page, limit, pageCount) {
+
+    pagination.innerHTML +=
+        `
+        
+            <li>
+              <a href="#" class="flex items-center justify-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading font-medium rounded-s-base text-sm px-3 h-10 focus:outline-none">Previous</a>
+            </li>
+
+            
+          
+        `;
+
+    for (let i = 1; i <= pageCount; i++) {
+        pagination.innerHTML +=
+            ` 
+                       <li>
+                             <button onClick="passPage(${i}, ${limit})"
+                              class="flex items-center justify-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading font-medium text-sm w-10 h-10 focus:outline-none">${i}</button>
+                        </li>
+            
+            `
+    };
+
+    pagination.innerHTML +=
+        `
+        <li>
+              <button onClick="next(${page} , ${limit}, ${pageCount})"  class="flex items-center justify-center text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading font-medium rounded-e-base text-sm px-3 h-10 focus:outline-none">Next</button>
+            </li>
+        `
+}
+
+async function passPage(page, limit) {
+    try {
+        let resUI = await axios(`https://691484a73746c71fe0489020.mockapi.io/teachers?page=${page}&limit=${limit}`);
+
+        mapAllTeachers(teachers, resUI.data);
+
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+async function next(page, limit, pageCount) {
+    page++;
+    try {
+        let resUI = await axios(`https://691484a73746c71fe0489020.mockapi.io/teachers?page=${page}&limit=${limit}`);
+
+        mapAllTeachers(teachers, resUI.data);
+        paginationBtn(page, limit, pageCount)
+    } catch (err) {
+        console.log(err);
+
+    }
+}
+
+function mapAllTeachers(content, data) {
+    content.innerHTML = "";
+    data.map((el) => {
+        content.innerHTML +=
+            `
 
 
 <div class="w-full max-w-sm bg-gradient-to-br from-[#0f172a] via-[#1e3a8a] to-[#11bdf6] text-white border border-[#1e40af] rounded-xl shadow-xl p-5 flex flex-col items-center transition-all duration-500 hover:shadow-2xl hover:scale-[1.03]">
@@ -70,22 +158,27 @@ async function getTeachers() {
             <button onClick="deleteTeachers(${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-red-700 dark:bg-gray-800 dark:text-red-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-700 duration-300">Delete</button>
         </div>
     </div>
+    
 </div>
 
         `
-        })
-
-    } catch (err) {
-        console.log(err);
-
-    }
+    })
 }
-
-getTeachers();
 
 async function deleteTeachers(id) {
     try {
-        await axios.delete(`https://691484a73746c71fe0489020.mockapi.io/teachers/${id}`);
+
+        let res = await axios.get(`https://691484a73746c71fe0489020.mockapi.io/teachers/${id}/students`);
+
+        if (res?.data.length > 0) {
+            alert("You can not delete this teacher, He/She has some students on his/her own!");
+        } else if (res?.data.length == 0 || res?.data === undefined) {
+            await axios.delete(`https://691484a73746c71fe0489020.mockapi.io/teachers/${id}`);
+        } else {
+            res?.data === 0
+        }
+
+
         getTeachers();
     } catch (err) {
         console.log(err);
@@ -116,7 +209,7 @@ innerModal.addEventListener("submit", async function (e) {
             await axios.put(`https://691484a73746c71fe0489020.mockapi.io/teachers/${select}`, options)
             :
             await axios.post(`https://691484a73746c71fe0489020.mockapi.io/teachers`, options)
-        
+
         outerModal.classList.add("hidden")
         getTeachers();
 
@@ -159,9 +252,25 @@ async function editTeachers(id) {
         innerModal[9].value = res.data.profession;
         innerModal[10].value = res.data.telegram;
         innerModal[11].checked = res.data.gender;
-        
+
     } catch (err) {
         console.log(err);
 
     }
 }
+
+search.addEventListener("input", async function (e) {
+    let searchValue = e.target.value;
+
+
+
+    try {
+        let res = await axios.get(`https://691484a73746c71fe0489020.mockapi.io/teachers?firstname=${searchValue}`);
+
+        mapAllTeachers(teachers, res?.data)
+
+    } catch (err) {
+        console.log(err);
+
+    }
+})

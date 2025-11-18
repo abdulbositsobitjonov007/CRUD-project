@@ -5,9 +5,11 @@ let teacherId = path.get("teacherId");
 let students = document.getElementById("students");
 
 let addStudents = document.getElementById("add-students");
-let selectTeachers = document.getElementById("selectteachers");
+let selectTeachers = document.getElementById("select-teachers");
 let outerModal = document.getElementById("outer-modal");
 let innerModal = document.getElementById("inner-modal");
+let studentBtn = document.getElementById("students-btn");
+let toast = document.getElementById("toast");
 
 let select = null;
 
@@ -29,7 +31,8 @@ outerModal.addEventListener("click", function () {
     innerModal[8].value = "";
     innerModal[9].value = "";
     innerModal[10].value = "";
-    innerModal[11].checked = false;
+    innerModal[11].value = "";
+    innerModal[12].checked = false;
 });
 
 innerModal.addEventListener("click", function (e) {
@@ -40,7 +43,7 @@ async function getStudents() {
     try {
         let res = await axios(teacherId ? `https://691484a73746c71fe0489020.mockapi.io/teachers/${teacherId}/students` : `https://691484a73746c71fe0489020.mockapi.io/students`)
         console.log(res.data);
-students.innerHTML = "";
+        students.innerHTML = "";
         res?.data.map((el) => {
             students.innerHTML +=
                 `
@@ -72,11 +75,12 @@ students.innerHTML = "";
         <h5 class="mb-1 text-xl font-medium text-gray-900 dark:text-white">${el.firstname} ${el.lastname}</h5>
         <span class="text-sm text-gray-500 dark:text-gray-400">${el.age}</span>
         <div class="flex mt-4 md:mt-6">
-            <a href="../pages/students.html?teacherId=${el.id}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">See Info</a>
+            <a href="../pages/studentDetail.html?id=${el.id}" class="inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">See Info</a>
             <button onClick="editStudents(${el.teacherId}, ${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-blue-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-700 dark:bg-gray-800 dark:text-blue-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-blue-700 duration-300">Edit</button>
             <button onClick="deleteStudents(${el.teacherId}, ${el.id})" class="cursor-pointer py-2 px-4 ms-2 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-red-700 dark:bg-gray-800 dark:text-red-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-red-700 duration-300">Delete</button>
         </div>
     </div>
+   
 </div>
 
         `
@@ -88,22 +92,28 @@ students.innerHTML = "";
     }
 }
 
+studentBtn.addEventListener("click", function () {
+    outerModal.classList.add("hidden");
+})
+
 async function getTeachers() {
-    try{
-       let res = await axios.get("https://691484a73746c71fe0489020.mockapi.io/teachers");
-    let teachers = res?.data;
-    console.log(teachers);
-    
-    teachers.map((el) => {
-        selectTeachers.innerHTML += `
+    try {
+        let res = await axios.get("https://691484a73746c71fe0489020.mockapi.io/teachers");
+        let teachers = res?.data;
+        console.log(teachers);
+
+        teachers.map((el) => {
+            selectTeachers.innerHTML += `
         <option value="${el.id}">${el.firstname}</option>
         `
-    })
-    }catch(err){
+        })
+    } catch (err) {
         console.log(err);
-        
+
     }
 }
+
+getTeachers();
 
 getStudents();
 
@@ -113,6 +123,13 @@ async function deleteStudents(teacherId, id) {
     try {
         await axios.delete(`https://691484a73746c71fe0489020.mockapi.io/teachers/${teacherId}/students/${id}`);
         getStudents();
+        toast.classList.remove("hidden");
+        toast.textContent = `Student with id: ${id} was deleted.`;
+
+        setTimeout(() => {
+            toast.classList.add("hidden")
+        }, 3000)
+
     } catch (err) {
         console.log(err);
 
@@ -121,32 +138,33 @@ async function deleteStudents(teacherId, id) {
 
 innerModal.addEventListener("submit", async function (e) {
     e.preventDefault();
-    let option = {};
-    option.firstname = e.target[0].value;
-    option.lastname = e.target[1].value;
-    option.phone = e.target[2].value;
-    option.email = e.target[3].value;
-    option.age = e.target[4].value;
-    option.experience = e.target[5].value;
-    option.grade = e.target[6].value;
-    option.avatar = e.target[7].value;
-    option.rating = e.target[8].value;
-    option.profession = e.target[9].value;
-    option.telegram = e.target[10].value;
-    option.gender = e.target[11].checked;
+    let options = {};
+    options.firstname = e.target[0].value;
+    options.lastname = e.target[1].value;
+    options.phone = e.target[2].value;
+    options.email = e.target[3].value;
+    options.age = e.target[4].value;
+    options.experience = e.target[5].value;
+    options.grade = e.target[6].value;
+    options.avatar = e.target[7].value;
+    options.rating = e.target[8].value;
+    options.profession = e.target[9].value;
+    options.telegram = e.target[10].value;
+    options.teacherId = e.target[11].value;
+    options.gender = e.target[12].checked;
+
 
 
     try {
 
-        select ?
+        if (select) {
+            await axios.put(`https://691484a73746c71fe0489020.mockapi.io/teachers/${options.teacherId}/students/${select}`, options)
+        } else {
+            await axios.post(`https://691484a73746c71fe0489020.mockapi.io/teachers/${options.teacherId}/students`, options)
+        }
 
-            await axios.put(`https://691484a73746c71fe0489020.mockapi.io/teachers/${option.teacherId}/students/${select}`, option)
-            :
-            await axios.post(`https://691484a73746c71fe0489020.mockapi.io/students`, option)
-
-        outerModal.classList.add("hidden")
         getStudents();
-
+        innerModal.classList.add("hidden");
         select = null;
 
         innerModal[0].value = "";
@@ -160,7 +178,8 @@ innerModal.addEventListener("submit", async function (e) {
         innerModal[8].value = "";
         innerModal[9].value = "";
         innerModal[10].value = "";
-        innerModal[11].checked = false;
+        innerModal[11].value = "";
+        innerModal[12].checked = false;
     } catch (err) {
         console.log(err);
 
